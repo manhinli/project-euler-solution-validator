@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+    airetc:
+        build:
+            context: .
+            dockerfile: dev.Dockerfile
+        volumes:
+            - ./pages:/app/pages
+            - ./public:/app/public
+            - ./styles:/app/styles
+        ports:
+            - 3000:3000
+        networks:
+            - airetc_network
+    
+    database:
+        image: mongo:5.0
+        volumes:
+            - ./.data/database:/data/db
+        networks:
+            - airetc_network
+
+networks:
+    airetc_network:
