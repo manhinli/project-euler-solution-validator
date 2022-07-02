@@ -6,10 +6,15 @@ services:
             context: .
             dockerfile: dev.Dockerfile
         volumes:
+            # TODO: Consolidate directories under a root dir
+            - ./dist:/app/dist
             - ./lib:/app/lib
             - ./pages:/app/pages
+            - ./problems:/app/problems
             - ./public:/app/public
+            - ./scripts:/app/scripts
             - ./styles:/app/styles
+            - ./types:/app/types
         ports:
             - 3000:3000
         networks:
@@ -19,6 +24,8 @@ services:
         image: mongo:5.0
         volumes:
             - ./.data/database:/data/db
+        ports:
+            - 27017:27017
         networks:
             - airetc_network
 

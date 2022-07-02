@@ -9,9 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "mongodb": "4.7.0",
     "next": "12.2.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "readdir-glob": "1.1.2",
     "zod": "3.17.3"
   },
   "devDependencies": {

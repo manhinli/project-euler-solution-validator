@@ -8,10 +8,7 @@ WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED 1
 
 # Copy package then fetch dependencies
-COPY lib ./lib
-COPY pages ./pages
-COPY public ./public
-COPY styles ./styles
+# NOTE: Project files are expected to be mounted into the container
 COPY package.json package-lock.json ./
 COPY next.config.js .
 COPY tsconfig.json .
