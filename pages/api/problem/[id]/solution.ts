@@ -70,14 +70,17 @@ export default async function ApiProblemIdSolution(
                     `${requestedProblem.problemId}.js`
                 );
 
-                // FIXME: Currently encountering dynamic module import issues
-                const { validateSolution } = await import(modulePath);
+                // NOTE: Dynamic imports require the `webpackIgnore` declaration
+                // or Webpack will mangle the import path
+                const { validateSolution } = await import(
+                    /* webpackIgnore: true */ modulePath
+                );
 
                 // Run solution value validation against problem
                 //
                 // May need to consider async validation in separate
                 // thread/worker
-                const validationResult = validateSolution(solutionValue);
+                const validationResult = await validateSolution(solutionValue);
 
                 // Record submission into database
                 await attempts.insertOne({

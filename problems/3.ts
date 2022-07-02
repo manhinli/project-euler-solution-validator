@@ -10,7 +10,7 @@ export const metadata: ProblemMetadata = {
         "This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.",
 };
 
-export const validateSolution: ProblemSolutionValidator = (value) => {
+export const validateSolution: ProblemSolutionValidator = async (value) => {
     // TODO: Implement solution validator
     return false;
 };
