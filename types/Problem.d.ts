@@ -6,4 +6,11 @@ export interface ProblemMetadata {
     license: string;
 }
 
-export type ProblemSolutionValidator = (value: string) => boolean;
+export type ProblemSolutionValidator = (value: string) => Promise<boolean>;
+
+export interface ProblemLeaderboardEntry {
+    userName: string;
+    /** String encoded Date */
+    earliestSuccessfulAttempt: string;
+    numberOfAttempts: number;
+}
