@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { getCollection } from "../../../../lib/database";
 import { parseProblemId } from "../../../../lib/parsers";
 import { Attempt } from "../../../../types/Attempt";
+import { ProblemMetadata } from "../../../../types/Problem";
 
 /**
  * Handler for GET requests to `/api/problem/{id}/leaderboard`.
@@ -20,12 +21,21 @@ export default async function ApiProblemIdLeaderboard(
             try {
                 const problemId = parseProblemId(req.query.id);
 
+                // Check problem registered in database
+                const problems = getCollection<ProblemMetadata>("problems");
+                const requestedProblem = await problems.findOne({ problemId });
+
+                // If requested problem does not exist, return 404 Not Found
+                if (requestedProblem === null) {
+                    return res.status(404).send(null);
+                }
+
                 // Get problem leaderboard via query from database
                 const attempts = getCollection<Attempt>("attempts");
 
                 const query = attempts.aggregate([
                     // Get attempts against this problem
-                    { $match: { problemId } },
+                    { $match: { problemId: requestedProblem.problemId } },
 
                     // Sort information by attempt date, ascending
                     { $sort: { dateTime: 1 } },
