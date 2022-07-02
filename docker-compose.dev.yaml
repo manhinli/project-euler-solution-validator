@@ -6,6 +6,7 @@ services:
             context: .
             dockerfile: dev.Dockerfile
         volumes:
+            - ./lib:/app/lib
             - ./pages:/app/pages
             - ./public:/app/public
             - ./styles:/app/styles

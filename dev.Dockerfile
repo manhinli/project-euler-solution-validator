@@ -8,6 +8,7 @@ WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED 1
 
 # Copy package then fetch dependencies
+COPY lib ./lib
 COPY pages ./pages
 COPY public ./public
 COPY styles ./styles
