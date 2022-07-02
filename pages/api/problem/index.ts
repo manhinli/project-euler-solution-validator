@@ -1,4 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { getCollection } from "../../../lib/database";
+import { ProblemMetadata } from "../../../types/Problem";
 
 /**
  * Handler for GET requests to `/api/problem`.
@@ -6,7 +8,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
  * @param req Request data
  * @param res Response data
  */
-export default function ApiProblemIndex(
+export default async function ApiProblemIndex(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
@@ -14,8 +16,15 @@ export default function ApiProblemIndex(
     switch (req.method) {
         // Return all problems
         case "GET": {
-            // TODO: Get all available problem information from database
-            return res.status(200).send({});
+            const problems = getCollection<ProblemMetadata>("problems");
+
+            // Get all available problem information from database
+            const allProblems = await problems
+                .find()
+                .sort("problemId", "ascending")
+                .toArray();
+
+            return res.status(200).send(allProblems);
         }
 
         default: {
