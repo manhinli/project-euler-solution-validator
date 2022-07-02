@@ -2,15 +2,18 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import useSWR from "swr";
+import useSWRImmutable from "swr/immutable";
 import { ProblemLeaderboardEntry, ProblemMetadata } from "../../types/Problem";
 
 const ProblemId: NextPage = () => {
     const { query } = useRouter();
-    const problemMetadata = useSWR<ProblemMetadata>(
+    const problemMetadata = useSWRImmutable<ProblemMetadata>(
         query.id ? `/api/problem/${query.id}` : null
     );
     const problemLeaderboard = useSWR<readonly ProblemLeaderboardEntry[]>(
-        query.id ? `/api/problem/${query.id}/leaderboard` : null
+        query.id ? `/api/problem/${query.id}/leaderboard` : null,
+        // Update leaderboard every minute
+        { refreshInterval: 60000 }
     );
 
     return (

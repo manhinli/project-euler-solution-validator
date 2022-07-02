@@ -1,11 +1,12 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import useSWR from "swr";
+import useSWRImmutable from "swr/immutable";
 import { ProblemMetadata } from "../types/Problem";
 
 const Index: NextPage = () => {
-    const { data, error } = useSWR<readonly ProblemMetadata[]>("/api/problem");
+    const { data, error } =
+        useSWRImmutable<readonly ProblemMetadata[]>("/api/problem");
 
     return (
         <div>
