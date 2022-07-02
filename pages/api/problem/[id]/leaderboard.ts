@@ -1,5 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { getCollection } from "../../../../lib/database";
 import { parseProblemId } from "../../../../lib/parsers";
+import { Attempt } from "../../../../types/Attempt";
 
 /**
  * Handler for GET requests to `/api/problem/{id}/leaderboard`.
@@ -7,7 +9,7 @@ import { parseProblemId } from "../../../../lib/parsers";
  * @param req Request data
  * @param res Response data
  */
-export default function ApiProblemIdLeaderboard(
+export default async function ApiProblemIdLeaderboard(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
@@ -18,11 +20,106 @@ export default function ApiProblemIdLeaderboard(
             try {
                 const problemId = parseProblemId(req.query.id);
 
-                // TODO: Get problem leaderboard via query from database
+                // Get problem leaderboard via query from database
+                const attempts = getCollection<Attempt>("attempts");
 
-                return res.status(200).send({
-                    problemId,
-                });
+                const query = attempts.aggregate([
+                    // Get attempts against this problem
+                    { $match: { problemId } },
+
+                    // Sort information by attempt date, ascending
+                    { $sort: { dateTime: 1 } },
+
+                    // Run query against each user's first successful attempt
+                    // and
+                    {
+                        $facet: {
+                            usersWithSuccessfulAttempt: [
+                                { $match: { attemptSuccessful: true } },
+                                {
+                                    $group: {
+                                        _id: "$userName",
+                                        earliestSuccessfulAttempt: {
+                                            $first: "$dateTime",
+                                        },
+                                    },
+                                },
+                            ],
+                            userAttemptCounts: [
+                                {
+                                    $group: {
+                                        _id: "$userName",
+                                        numberOfAttempts: { $sum: 1 },
+                                    },
+                                },
+                            ],
+                        },
+                    },
+
+                    // Gather the information from the above facet together
+                    {
+                        $project: {
+                            _all: {
+                                $concatArrays: [
+                                    "$usersWithSuccessfulAttempt",
+                                    "$userAttemptCounts",
+                                ],
+                            },
+                        },
+                    },
+                    {
+                        $unwind: "$_all",
+                    },
+                    {
+                        $group: {
+                            _id: "$_all._id",
+                            _data: { $push: "$_all" },
+                        },
+                    },
+
+                    // Fold fields into the same document
+                    {
+                        $replaceRoot: {
+                            newRoot: {
+                                $mergeObjects: {
+                                    $concatArrays: ["$_data", ["$$ROOT"]],
+                                },
+                            },
+                        },
+                    },
+
+                    // Remove unsuccessful attempts
+                    {
+                        $match: {
+                            earliestSuccessfulAttempt: { $ne: null },
+                        },
+                    },
+
+                    // Clean up result
+                    {
+                        $project: {
+                            userName: "$_id",
+                            earliestSuccessfulAttempt: 1,
+                            numberOfAttempts: 1,
+                        },
+                    },
+                    {
+                        $unset: "_id",
+                    },
+
+                    // Sort by earliest attempt and number of attempts, both
+                    // ascending
+                    {
+                        $sort: {
+                            earliestSuccessfulAttempt: 1,
+                            numberOfAttempts: 1,
+                        },
+                    },
+                ]);
+
+                const result = await query.toArray();
+
+                return res.status(200).send(result);
             } catch (e) {
                 // TODO: Consolidate error handling and pass validation errors
                 // to client
