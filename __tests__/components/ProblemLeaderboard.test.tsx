@@ -28,7 +28,7 @@ describe("ProblemLeaderboard", () => {
             {
                 userName: "Second User",
                 earliestSuccessfulAttempt: "2022-03-26T08:26:31.582Z",
-                numberOfAttempts: 16,
+                numberOfAttempts: 32,
             },
         ];
 

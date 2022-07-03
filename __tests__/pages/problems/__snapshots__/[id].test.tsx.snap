@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ProblemLeaderboard renders data from API 1`] = `
+exports[`ProblemId renders leaderboard 1`] = `
 Array [
   <tr>
     <td>

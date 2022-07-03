@@ -26,6 +26,17 @@ const ProblemId: NextPage = () => {
         mutate(`/api/problem/${problemId}/leaderboard`);
     }, [mutate, problemId]);
 
+    if (error) {
+        return (
+            <div>
+                <Header />
+                <ContentContainer>
+                    <h2>Problem not found</h2>
+                </ContentContainer>
+            </div>
+        );
+    }
+
     return (
         <div>
             <Header

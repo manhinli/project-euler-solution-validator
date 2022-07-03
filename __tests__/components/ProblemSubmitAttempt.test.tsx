@@ -1,17 +1,10 @@
-import {
-    fireEvent,
-    getAllByRole,
-    getByPlaceholderText,
-    render,
-    screen,
-    waitFor,
-} from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { swrConfigWrapper } from "../../lib/test";
 import ProblemSubmitAttempt from "../../components/ProblemSubmitAttempt";
 import { act } from "react-dom/test-utils";
 import { UsernameContext } from "../../lib/contexts";
 
+// Mock `fetch`
 globalThis.fetch = jest.fn(() => Promise.resolve({}));
 
 beforeEach(() => {

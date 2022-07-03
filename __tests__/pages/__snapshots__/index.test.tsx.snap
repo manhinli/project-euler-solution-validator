@@ -1,0 +1,44 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Index renders problems fetched from server 1`] = `
+<table
+  class="problems"
+>
+  <thead>
+    <tr>
+      <th>
+        ID
+      </th>
+      <th>
+        Title
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        42
+      </td>
+      <td>
+        <a
+          href="/problem/42"
+        >
+          Ultimate Question of Life, the Universe, and Everything
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        85
+      </td>
+      <td>
+        <a
+          href="/problem/85"
+        >
+          Number of Known Primes that existed before 1984
+        </a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;

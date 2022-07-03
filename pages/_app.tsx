@@ -6,7 +6,14 @@ import "../styles/globals.css";
 
 const DEFAULT_SWR_CONFIG = {
     // Default fetcher executes GETs and returns JSON encoded data as objects
-    fetcher: (url: string) => fetch(url).then((res) => res.json()),
+    fetcher: (url: string) =>
+        fetch(url).then((res) => {
+            if (res.status !== 200) {
+                throw new Error("Request failed");
+            }
+
+            return res.json();
+        }),
 };
 
 function AireTCApp({ Component, pageProps }: AppProps) {
