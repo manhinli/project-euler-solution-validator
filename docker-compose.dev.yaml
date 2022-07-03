@@ -6,6 +6,7 @@ services:
             context: .
             dockerfile: dev.Dockerfile
         volumes:
+            - ./__tests__:/app/__tests__
             - ./components:/app/components
             - ./dist:/app/dist
             - ./lib:/app/lib
@@ -15,6 +16,9 @@ services:
             - ./scripts:/app/scripts
             - ./styles:/app/styles
             - ./types:/app/types
+            - ./jest.config.js:/app/jest.config.js
+            - ./next.config.js:/app/next.config.js
+            - ./tsconfig.json:/app/tsconfig.json
         env_file:
             - ./.env
         ports:

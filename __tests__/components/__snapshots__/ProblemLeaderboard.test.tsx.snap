@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ProblemLeaderboard renders data from API 1`] = `
+Array [
+  <tr>
+    <td>
+      First User
+    </td>
+    <td>
+      <time
+        datetime="2020-06-30T23:59:59.999Z"
+        title="2020-06-30T23:59:59.999Z"
+      >
+        6/30/20, 11:59:59 PM
+      </time>
+    </td>
+    <td>
+      16
+    </td>
+  </tr>,
+  <tr>
+    <td>
+      Second User
+    </td>
+    <td>
+      <time
+        datetime="2022-03-26T08:26:31.582Z"
+        title="2022-03-26T08:26:31.582Z"
+      >
+        3/26/22, 8:26:31 AM
+      </time>
+    </td>
+    <td>
+      16
+    </td>
+  </tr>,
+]
+`;

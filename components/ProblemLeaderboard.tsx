@@ -38,7 +38,7 @@ export const ProblemLeaderboard: React.FC<Props> = ({ problemId }) => {
                     <th>Number of attempts</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody data-testid="table-body">
                 {data?.map(
                     ({
                         userName,
