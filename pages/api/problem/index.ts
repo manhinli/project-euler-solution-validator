@@ -1,4 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import {
+    respondMethodNotAllowed,
+    respondSuccessWithJson,
+} from "../../../lib/api";
 import { getCollection } from "../../../lib/database";
 import { ProblemMetadata } from "../../../types/Problem";
 
@@ -24,11 +28,11 @@ export default async function ApiProblemIndex(
                 .sort("problemId", "ascending")
                 .toArray();
 
-            return res.status(200).send(allProblems);
+            return respondSuccessWithJson(res, allProblems);
         }
 
         default: {
-            // TODO: Return unsupported method error
+            return respondMethodNotAllowed(res);
         }
     }
 }

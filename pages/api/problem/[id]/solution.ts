@@ -1,6 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { join } from "path";
 import { z } from "zod";
+import {
+    respondClientError,
+    respondMethodNotAllowed,
+    respondSuccessWithJson,
+} from "../../../../lib/api";
 import { getCollection } from "../../../../lib/database";
 import { parseProblemId } from "../../../../lib/parsers";
 import { Attempt } from "../../../../types/Attempt";
@@ -39,16 +44,21 @@ export default async function ApiProblemIdSolution(
 
                 // Check if user has already submitted successful solution
                 const attempts = getCollection<Attempt>("attempts");
-                const previousSuccessfulAttempts =
-                    await attempts.countDocuments({
+                const previousSuccessfulAttempt = await attempts.findOne(
+                    {
                         problemId,
                         userName,
                         attemptSuccessful: true,
-                    });
+                    },
+                    { projection: { _id: 0 } }
+                );
 
                 // If already successful, return 200 immediately
-                if (previousSuccessfulAttempts > 0) {
-                    return res.status(200).send(null);
+                if (previousSuccessfulAttempt !== null) {
+                    return respondSuccessWithJson(
+                        res,
+                        previousSuccessfulAttempt
+                    );
                 }
 
                 // Capture the request date time now as we want to know the
@@ -83,29 +93,32 @@ export default async function ApiProblemIdSolution(
                 //
                 // May need to consider async validation in separate
                 // thread/worker
-                const validationResult = await validateSolution(
-                    solutionValue.trim()
-                );
+                const attemptValue = solutionValue.trim();
+                const validationResult = await validateSolution(attemptValue);
 
                 // Record submission into database
-                await attempts.insertOne({
+                const { insertedId } = await attempts.insertOne({
                     problemId: requestedProblem.problemId,
                     userName,
                     dateTime: requestDateTime,
-                    attemptValue: solutionValue,
+                    attemptValue,
                     attemptSuccessful: validationResult,
                 });
 
-                return res.status(200).send(null);
+                // Fetch record
+                const successfulAttempt = await attempts.findOne(
+                    { _id: insertedId },
+                    { projection: { _id: 0 } }
+                );
+
+                return respondSuccessWithJson(res, successfulAttempt!);
             } catch (e) {
-                // TODO: Consolidate error handling and pass validation errors
-                // to client
-                return res.status(400).send({ error: e });
+                return respondClientError(res, undefined, e);
             }
         }
 
         default: {
-            // TODO: Return unsupported method error
+            return respondMethodNotAllowed(res);
         }
     }
 }

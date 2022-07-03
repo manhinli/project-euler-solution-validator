@@ -1,4 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import {
+    respondClientError,
+    respondMethodNotAllowed,
+    respondNotFound,
+    respondSuccessWithJson,
+} from "../../../../lib/api";
 import { getCollection } from "../../../../lib/database";
 import { parseProblemId } from "../../../../lib/parsers";
 import { Attempt } from "../../../../types/Attempt";
@@ -27,7 +33,7 @@ export default async function ApiProblemIdLeaderboard(
 
                 // If requested problem does not exist, return 404 Not Found
                 if (requestedProblem === null) {
-                    return res.status(404).send(null);
+                    return respondNotFound(res);
                 }
 
                 // Get problem leaderboard via query from database
@@ -129,16 +135,14 @@ export default async function ApiProblemIdLeaderboard(
 
                 const result = await query.toArray();
 
-                return res.status(200).send(result);
+                return respondSuccessWithJson(res, result);
             } catch (e) {
-                // TODO: Consolidate error handling and pass validation errors
-                // to client
-                return res.status(400).send({});
+                return respondClientError(res, undefined, e);
             }
         }
 
         default: {
-            // TODO: Return unsupported method error
+            return respondMethodNotAllowed(res);
         }
     }
 }
