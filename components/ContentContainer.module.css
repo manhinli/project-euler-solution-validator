@@ -1,0 +1,10 @@
+.contentContainer {
+    width: 100%;
+}
+
+.contentContainer > div {
+    width: 100%;
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}

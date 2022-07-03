@@ -7,6 +7,7 @@ services:
             dockerfile: dev.Dockerfile
         volumes:
             # TODO: Consolidate directories under a root dir
+            - ./components:/app/components
             - ./dist:/app/dist
             - ./lib:/app/lib
             - ./pages:/app/pages

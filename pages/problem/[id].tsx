@@ -9,6 +9,8 @@ import {
 } from "react";
 import useSWR, { useSWRConfig } from "swr";
 import useSWRImmutable from "swr/immutable";
+import ContentContainer from "../../components/ContentContainer";
+import Header from "../../components/Header";
 import { UsernameContext } from "../../lib/contexts";
 import { ProblemLeaderboardEntry, ProblemMetadata } from "../../types/Problem";
 
@@ -84,15 +86,16 @@ const ProblemId: NextPage = () => {
 
     return (
         <div>
-            <Head>
-                <title>
-                    Project Euler Solution Validator -{" "}
-                    {problemMetadata.data?.title}
-                </title>
-            </Head>
-
-            <main>
+            <Header
+                subtitle={problemMetadata.data?.title}
+                breadcrumbs={[
+                    { href: "/", label: "Home" },
+                    { href: "#", label: problemMetadata.data?.title ?? "" },
+                ]}
+            />
+            <ContentContainer>
                 <h1>{problemMetadata.data?.title}</h1>
+                <p>Problem {problemId}</p>
                 <div
                     dangerouslySetInnerHTML={{
                         __html: problemMetadata.data?.description ?? "",
@@ -164,7 +167,7 @@ const ProblemId: NextPage = () => {
                         </tbody>
                     </table>
                 </div>
-            </main>
+            </ContentContainer>
         </div>
     );
 };
