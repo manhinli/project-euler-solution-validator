@@ -4,17 +4,6 @@ services:
     airetc:
         build:
             context: .
-            dockerfile: dev.Dockerfile
-        volumes:
-            - ./components:/app/components
-            - ./dist:/app/dist
-            - ./lib:/app/lib
-            - ./pages:/app/pages
-            - ./problems:/app/problems
-            - ./public:/app/public
-            - ./scripts:/app/scripts
-            - ./styles:/app/styles
-            - ./types:/app/types
         env_file:
             - ./.env
         ports:

@@ -1,4 +1,4 @@
-# Development environment Docker image for `aire-tech-challenge` application
+# Development environment Docker image
 
 FROM node:16-alpine
 
