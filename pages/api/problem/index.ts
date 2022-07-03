@@ -20,7 +20,7 @@ export default async function ApiProblemIndex(
 
             // Get all available problem information from database
             const allProblems = await problems
-                .find()
+                .find({}, { projection: { _id: 0 } })
                 .sort("problemId", "ascending")
                 .toArray();
 

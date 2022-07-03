@@ -24,9 +24,10 @@ export default async function ApiProblemIdIndex(
                 const problems = getCollection<ProblemMetadata>("problems");
 
                 // Get all available problem information from database
-                const requestedProblem = await problems.findOne({
-                    problemId,
-                });
+                const requestedProblem = await problems.findOne(
+                    { problemId },
+                    { projection: { _id: 0 } }
+                );
 
                 // If requested problem does not exist, return 404 Not Found
                 if (requestedProblem === null) {
