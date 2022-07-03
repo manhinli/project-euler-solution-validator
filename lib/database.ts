@@ -1,7 +1,8 @@
 import { Collection, MongoClient } from "mongodb";
+import { getEnv } from "./env";
 
-const DATABASE_URI = "mongodb://database:27017";
-const DATABASE_NAME = "airetc";
+const DATABASE_URI = getEnv("DATABASE_URI");
+const DATABASE_NAME = getEnv("DATABASE_NAME");
 const COLLECTIONS = ["attempts", "problems"] as const;
 
 export function getClient() {

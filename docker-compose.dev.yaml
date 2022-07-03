@@ -16,6 +16,8 @@ services:
             - ./scripts:/app/scripts
             - ./styles:/app/styles
             - ./types:/app/types
+        env_file:
+            - ./.env
         ports:
             - 3000:3000
         networks:

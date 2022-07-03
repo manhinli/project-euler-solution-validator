@@ -5,20 +5,31 @@ const readdirGlob = require("readdir-glob");
 //
 // NOTE: This will wipe the database and recreate collections!
 
+const DATABASE_URI = process.env.DATABASE_URI;
+const DATABASE_NAME = process.env.DATABASE_NAME;
+const COLLECTIONS = ["attempts", "problems"];
+const PROBLEMS_COMPILED_PATH = process.env.PROBLEMS_COMPILED_PATH;
+
 (async function () {
     // Connect to database
-    const client = new MongoClient("mongodb://database:27017");
+    const client = new MongoClient(DATABASE_URI);
     await client.connect();
 
     // Recreate database
-    await client.db("airetc").dropDatabase();
+    await client.db(DATABASE_NAME).dropDatabase();
 
-    const db = client.db("airetc");
-    db.createCollection("problems");
-    db.createCollection("attempts");
+    const db = client.db(DATABASE_NAME);
+    for (const collection of COLLECTIONS) {
+        await db.createCollection(collection);
+    }
 
     // Index compiled problems located in /dist/problems
-    const problemsGlob = readdirGlob("./dist/problems", { pattern: "*.js" });
+    const problemsGlob = readdirGlob(PROBLEMS_COMPILED_PATH, {
+        pattern: "*.js",
+    });
+
+    // Keep track of how many we've indexed
+    let indexCount = 0;
 
     problemsGlob.on("match", async (item) => {
         const path = item.absolute;
@@ -26,6 +37,8 @@ const readdirGlob = require("readdir-glob");
             // Pull in metadata from each problem
             const problemMetadata = require(path).metadata;
             await db.collection("problems").insertOne(problemMetadata);
+
+            ++indexCount;
         } catch (e) {
             console.error(`Unable to import metadata from ${path}`, e);
         }
@@ -40,9 +53,9 @@ const readdirGlob = require("readdir-glob");
         // Check that we've got at least one problem
         const problemsCount = await db.collection("problems").countDocuments();
 
-        if (problemsCount === 0) {
+        if (problemsCount !== indexCount) {
             console.error(
-                "No problems were indexed into DB - possibly no compiled problems found?"
+                `${problemsCount} documents in "problems" collection; expected ${indexCount} - did something go wrong with indexing?`
             );
             process.exit(1);
             return;

@@ -7,6 +7,7 @@ import {
     respondSuccessWithJson,
 } from "../../../../lib/api";
 import { getCollection } from "../../../../lib/database";
+import { getEnv } from "../../../../lib/env";
 import { parseProblemId } from "../../../../lib/parsers";
 import { Attempt } from "../../../../types/Attempt";
 import { ProblemMetadata } from "../../../../types/Problem";
@@ -20,7 +21,7 @@ const PostRequestBodySchema = z.object({
         .min(1, { message: "Solution value must be a non-empty string" }),
 });
 
-const PROBLEM_VALIDATOR_DIR = "/app/dist/problems";
+const PROBLEMS_COMPILED_PATH = getEnv("PROBLEMS_COMPILED_PATH");
 
 /**
  * Handler for POST requests to `/api/problem/{id}/solution`.
@@ -57,7 +58,7 @@ export default async function ApiProblemIdSolution(
 
                 // Get problem validator
                 const modulePath = join(
-                    PROBLEM_VALIDATOR_DIR,
+                    PROBLEMS_COMPILED_PATH,
                     `${requestedProblem.problemId}.js`
                 );
 
