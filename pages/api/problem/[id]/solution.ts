@@ -42,25 +42,6 @@ export default async function ApiProblemIdSolution(
                     req.body
                 );
 
-                // Check if user has already submitted successful solution
-                const attempts = getCollection<Attempt>("attempts");
-                const previousSuccessfulAttempt = await attempts.findOne(
-                    {
-                        problemId,
-                        userName,
-                        attemptSuccessful: true,
-                    },
-                    { projection: { _id: 0 } }
-                );
-
-                // If already successful, return 200 immediately
-                if (previousSuccessfulAttempt !== null) {
-                    return respondSuccessWithJson(
-                        res,
-                        previousSuccessfulAttempt
-                    );
-                }
-
                 // Capture the request date time now as we want to know the
                 // _attempt_ time, not validation time
                 const requestDateTime = new Date();
@@ -97,6 +78,7 @@ export default async function ApiProblemIdSolution(
                 const validationResult = await validateSolution(attemptValue);
 
                 // Record submission into database
+                const attempts = getCollection<Attempt>("attempts");
                 const { insertedId } = await attempts.insertOne({
                     problemId: requestedProblem.problemId,
                     userName,
