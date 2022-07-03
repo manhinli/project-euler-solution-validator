@@ -1,0 +1,35 @@
+.pageContainer {
+    display: grid;
+
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+}
+
+.title {
+    grid-column-start: 1;
+    grid-column-end: 3;
+}
+
+.title > span {
+    font-style: italic;
+}
+
+.descriptionContent {
+    margin-bottom: 3rem;
+}
+
+.license,
+.linkToSource {
+    font-size: 0.8em;
+    font-style: italic;
+}
+
+.solutionContent {
+    padding: 1rem;
+    background: #ddd;
+    border-radius: 0.5rem;
+}
+
+.solutionContent > h3:first-child {
+    margin-top: 0;
+}

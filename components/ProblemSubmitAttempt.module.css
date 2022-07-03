@@ -1,0 +1,13 @@
+.form {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 0.5rem;
+}
+
+.form label {
+    text-align: end;
+}
+
+.form button[type=submit] {
+    grid-column-start: 2;
+}

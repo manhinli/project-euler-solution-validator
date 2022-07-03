@@ -1,0 +1,10 @@
+.problems {
+    border-collapse: collapse;
+}
+
+.problems th,
+.problems td {
+    text-align: center;
+    padding: 0.3rem 1rem;
+    border: 1px solid #ccc;
+}

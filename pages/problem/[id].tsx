@@ -1,171 +1,81 @@
 import type { NextPage } from "next";
-import Head from "next/head";
 import { useRouter } from "next/router";
-import {
-    ChangeEventHandler,
-    FormEventHandler,
-    useCallback,
-    useContext,
-} from "react";
-import useSWR, { useSWRConfig } from "swr";
+import { useCallback } from "react";
+import { useSWRConfig } from "swr";
 import useSWRImmutable from "swr/immutable";
 import ContentContainer from "../../components/ContentContainer";
 import Header from "../../components/Header";
-import { UsernameContext } from "../../lib/contexts";
-import { ProblemLeaderboardEntry, ProblemMetadata } from "../../types/Problem";
+import ProblemLeaderboard from "../../components/ProblemLeaderboard";
+import ProblemSubmitAttempt from "../../components/ProblemSubmitAttempt";
+import styles from "../../styles/ProblemId.module.css";
+import { ProblemMetadata } from "../../types/Problem";
 
 const ProblemId: NextPage = () => {
     // Problem ID is encoded in query parameters captured by the Next.js router
     const { query } = useRouter();
-    const problemId = query.id;
+    const problemId = Array.isArray(query.id) ? query.id[0] : query.id;
+
+    const { data, error } = useSWRImmutable<ProblemMetadata>(
+        problemId ? `/api/problem/${problemId}` : null
+    );
 
     const { mutate } = useSWRConfig();
 
-    const problemMetadata = useSWRImmutable<ProblemMetadata>(
-        problemId ? `/api/problem/${problemId}` : null
-    );
-    const problemLeaderboard = useSWR<readonly ProblemLeaderboardEntry[]>(
-        problemId ? `/api/problem/${problemId}/leaderboard` : null,
-        // Update leaderboard every minute
-        { refreshInterval: 60000 }
-    );
-
-    // Pull in user's name from shared context
-    const { value: username, onChange: setUsername } =
-        useContext(UsernameContext);
-
-    const handleSolutionFormSubmit: FormEventHandler<HTMLFormElement> =
-        useCallback(
-            async (e) => {
-                // Stop default form submission behaviour
-                e.preventDefault();
-
-                // Get input value
-                const solutionInput = e.currentTarget.elements.namedItem(
-                    "solution-input"
-                ) as HTMLInputElement;
-
-                const solutionValue = solutionInput.value;
-                const requestBody = {
-                    userName: username,
-                    solutionValue,
-                };
-
-                // Send solution off to server
-                const response = await fetch(
-                    `/api/problem/${problemId}/solution`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(requestBody),
-                    }
-                );
-
-                // TODO: Handle response
-                if (response.status === 200) {
-                    window.alert("Successfully received");
-                } else {
-                    window.alert("An error occurred");
-                }
-
-                // Trigger update of leaderboard
-                mutate(`/api/problem/${problemId}/leaderboard`);
-            },
-            [username, problemId, mutate]
-        );
-
-    const handleUsernameInputChange: ChangeEventHandler<HTMLInputElement> =
-        useCallback(
-            (e) => {
-                setUsername(e.currentTarget.value);
-            },
-            [setUsername]
-        );
+    const onSolutionSubmit = useCallback(() => {
+        // Trigger update of leaderboard
+        mutate(`/api/problem/${problemId}/leaderboard`);
+    }, [mutate, problemId]);
 
     return (
         <div>
             <Header
-                subtitle={problemMetadata.data?.title}
+                subtitle={data?.title}
                 breadcrumbs={[
                     { href: "/", label: "Home" },
-                    { href: "#", label: problemMetadata.data?.title ?? "" },
+                    { href: "#", label: data?.title ?? "" },
                 ]}
             />
-            <ContentContainer>
-                <h1>{problemMetadata.data?.title}</h1>
-                <p>Problem {problemId}</p>
-                <div
-                    dangerouslySetInnerHTML={{
-                        __html: problemMetadata.data?.description ?? "",
-                    }}
-                />
-                <p>
-                    <a
-                        href={problemMetadata.data?.url}
-                        rel="noreferrer noopener"
-                        target="_blank"
-                    >
-                        View this problem on Project Euler
-                    </a>
-                </p>
-                <p>{problemMetadata.data?.license}</p>
-                <h3>Submit your solution</h3>
-                <div>
-                    <form onSubmit={handleSolutionFormSubmit}>
-                        <div>
-                            <label>
-                                Your name:{" "}
-                                <input
-                                    value={username}
-                                    onChange={handleUsernameInputChange}
-                                    placeholder="Enter your name here..."
-                                    required
-                                />
-                            </label>
-                        </div>
-                        <div>
-                            <label>
-                                Solution:{" "}
-                                <input
-                                    name="solution-input"
-                                    placeholder="Enter solution here..."
-                                    required
-                                />
-                            </label>
-                        </div>
-                        <div>
-                            <button type="submit">Submit solution</button>
-                        </div>
-                    </form>
+            <ContentContainer childrenWrapperClassName={styles.pageContainer}>
+                <div className={styles.title}>
+                    <h2>{data?.title}</h2>
+                    <span>Problem {problemId}</span>
                 </div>
-                <h3>Leaderboard</h3>
-                <div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Submission time</th>
-                                <th>Number of attempts</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {problemLeaderboard.data?.map(
-                                ({
-                                    userName,
-                                    earliestSuccessfulAttempt,
-                                    numberOfAttempts,
-                                }) => (
-                                    <tr key={userName}>
-                                        <td>{userName}</td>
-                                        <td>{earliestSuccessfulAttempt}</td>
-                                        <td>{numberOfAttempts}</td>
-                                    </tr>
-                                )
-                            )}
-                        </tbody>
-                    </table>
+
+                <div className={styles.description}>
+                    <h3>Description</h3>
+                    <div
+                        className={styles.descriptionContent}
+                        dangerouslySetInnerHTML={{
+                            __html: data?.description ?? "",
+                        }}
+                    />
+                    <p className={styles.linkToSource}>
+                        This problem can be viewed on the Project Euler website
+                        at{" "}
+                        <a
+                            href={data?.url}
+                            rel="noreferrer noopener"
+                            target="_blank"
+                        >
+                            {data?.url}
+                        </a>
+                    </p>
+                    <p className={styles.license}>{data?.license}</p>
+                </div>
+
+                <div className={styles.solution}>
+                    <div className={styles.solutionContent}>
+                        <h3>Submit your solution</h3>
+                        <ProblemSubmitAttempt
+                            problemId={problemId}
+                            onSubmit={onSolutionSubmit}
+                        />
+                    </div>
+                </div>
+
+                <div className={styles.leaderboard}>
+                    <h3>Leaderboard</h3>
+                    <ProblemLeaderboard problemId={problemId} />
                 </div>
             </ContentContainer>
         </div>

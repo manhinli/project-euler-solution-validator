@@ -3,6 +3,7 @@ import Link from "next/link";
 import useSWRImmutable from "swr/immutable";
 import ContentContainer from "../components/ContentContainer";
 import Header from "../components/Header";
+import styles from "../styles/Index.module.css";
 import { ProblemMetadata } from "../types/Problem";
 
 const Index: NextPage = () => {
@@ -15,8 +16,18 @@ const Index: NextPage = () => {
             <ContentContainer>
                 <h2>Welcome</h2>
                 <p>Welcome to the Project Euler Solution Validator service.</p>
-                <p>To view problem descriptions, begin submitting solutions, and view leaderboards, select a problem below.</p>
-                <table>
+                <p>
+                    To view problem descriptions, begin submitting solutions,
+                    and view leaderboards, select a problem below.
+                </p>
+
+                <table className={styles.problems}>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                        </tr>
+                    </thead>
                     <tbody>
                         {data?.map(({ problemId, title }) => (
                             <tr key={problemId}>
