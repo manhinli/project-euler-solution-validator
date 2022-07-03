@@ -37,15 +37,21 @@ WORKDIR /app
 # Disable Next.js telemetry
 ENV NEXT_TELEMETRY_DISABLED 1
 
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/scripts ./scripts
+
+COPY --from=builder /app/next.config.js .
+COPY --from=builder /app/package.json .
+COPY --from=builder /app/package-lock.json .
+
+# Fetch dependencies again for potential use in scripts
+RUN npm ci
+
 # Don't run production as root
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 USER nextjs
-
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/next.config.js .
-COPY --from=builder /app/package.json .
 
 # The project is configured to output the Next.js app as a self-contained
 # standalone project
