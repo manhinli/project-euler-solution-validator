@@ -78,9 +78,14 @@ export default async function ApiProblemIdSolution(
 
                 // Run solution value validation against problem
                 //
+                // NOTE: We pass strings in not numbers as some problems have
+                // complex answers that are not able to be dealt with as numbers
+                //
                 // May need to consider async validation in separate
                 // thread/worker
-                const validationResult = await validateSolution(solutionValue);
+                const validationResult = await validateSolution(
+                    solutionValue.trim()
+                );
 
                 // Record submission into database
                 await attempts.insertOne({

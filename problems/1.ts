@@ -11,6 +11,27 @@ export const metadata: ProblemMetadata = {
 };
 
 export const validateSolution: ProblemSolutionValidator = async (value) => {
-    // TODO: Implement solution validator
-    return false;
+    // Problem 1
+    // Multiples of 3 or 5
+    //
+    // Solution is to run through all numbers between [3, 1000) and sum the
+    // numbers that are known to have 3 or 5 as a factor.
+    //
+    // We skip numbers 1 and 2 because they are definitely not multiples of 3
+    // and 5 which saves us two rounds.
+
+    let sum = 0;
+    const lowBound = 3;
+    const highBound = 1000;
+
+    for (let i = lowBound; i < highBound; i += 1) {
+        if (i % 3 === 0 || i % 5 === 0) {
+            sum += i;
+        }
+    }
+
+    // Compare answer and input value
+    //
+    // NOTE: Input values are passed as strings
+    return value === sum.toFixed(0);
 };
