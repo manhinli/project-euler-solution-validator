@@ -97,7 +97,7 @@ export const ProblemSubmitAttempt: React.FC<Props> = ({
 
     return (
         <form onSubmit={handleSolutionFormSubmit} className={styles.form}>
-            <label htmlFor="username-input">Your name</label>
+            <label htmlFor="username-input">Name</label>
             <input
                 id="username-input"
                 value={username}
