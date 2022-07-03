@@ -1,3 +1,4 @@
+import classnames from "classnames";
 import React, {
     ChangeEventHandler,
     FormEventHandler,
@@ -6,6 +7,7 @@ import React, {
     useState,
 } from "react";
 import { UsernameContext } from "../lib/contexts";
+import { Attempt } from "../types/Attempt";
 import styles from "./ProblemSubmitAttempt.module.css";
 
 export interface Props {
@@ -25,6 +27,13 @@ export const ProblemSubmitAttempt: React.FC<Props> = ({
 
     // Keep track of whether submission is in progress
     const [submitInProgress, setSubmitInProgress] = useState<boolean>(false);
+
+    // State to show submission success/error to user
+    const [lastAttempt, setLastAttempt] = useState<
+        | { state: "submitted"; attempt: Attempt }
+        | { state: "error"; error: unknown }
+        | undefined
+    >();
 
     const handleSolutionFormSubmit: FormEventHandler<HTMLFormElement> =
         useCallback(
@@ -69,17 +78,35 @@ export const ProblemSubmitAttempt: React.FC<Props> = ({
                         }
                     );
 
-                    // TODO: Handle response
+                    // Handle response
                     if (response.status === 200) {
-                        window.alert("Successfully received");
+                        // Submission accepted successfully (this does not
+                        // necessarily mean the solution was correct, but we
+                        // don't care about that here)
+                        const attempt = (await response.json()) as Attempt;
+
+                        setLastAttempt({
+                            state: "submitted",
+                            attempt,
+                        });
                     } else {
-                        window.alert("An error occurred");
+                        // An error occurred in submission
+                        setLastAttempt({
+                            state: "error",
+                            error: new Error(
+                                "Error occurred during submission"
+                            ),
+                        });
                     }
 
                     // Run onSubmit callback
                     onSubmit?.();
                 } catch (e) {
-                    // TODO: Handle error
+                    // Handle error
+                    setLastAttempt({
+                        state: "error",
+                        error: e,
+                    });
                 } finally {
                     setSubmitInProgress(false);
                 }
@@ -115,6 +142,37 @@ export const ProblemSubmitAttempt: React.FC<Props> = ({
             <button type="submit" disabled={submitInProgress}>
                 {submitInProgress ? "Submitting..." : "Submit solution"}
             </button>
+            {lastAttempt?.state === "submitted" &&
+            lastAttempt.attempt.attemptSuccessful ? (
+                <div
+                    className={classnames(
+                        styles.attemptResponse,
+                        styles.attemptCorrect
+                    )}
+                >
+                    Your solution is correct
+                </div>
+            ) : (
+                <div
+                    className={classnames(
+                        styles.attemptResponse,
+                        styles.attemptIncorrect
+                    )}
+                >
+                    Your solution is incorrect
+                </div>
+            )}
+            {lastAttempt?.state === "error" && (
+                <div
+                    className={classnames(
+                        styles.attemptResponse,
+                        styles.attemptError
+                    )}
+                >
+                    {(lastAttempt.error as Error).message ??
+                        "An error occurred during submission; please try again later."}
+                </div>
+            )}
         </form>
     );
 };

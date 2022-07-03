@@ -8,6 +8,29 @@
     text-align: end;
 }
 
-.form button[type=submit] {
+.form button[type="submit"] {
     grid-column-start: 2;
+}
+
+.attemptResponse {
+    padding: 0.5rem;
+    text-align: center;
+    border-radius: 0.5rem;
+
+    grid-column-start: 1;
+    grid-column-end: 3;
+}
+
+.attemptResponse.attemptCorrect {
+    background: #090;
+    color: #fff;
+}
+
+.attemptResponse.attemptIncorrect {
+    background: #f99100;
+    color: #fff;
+}
+
+.attemptResponse.attemptError {
+    background: #fcc;
 }
