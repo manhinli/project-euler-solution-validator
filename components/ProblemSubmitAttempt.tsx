@@ -143,25 +143,25 @@ export const ProblemSubmitAttempt: React.FC<Props> = ({
                 {submitInProgress ? "Submitting..." : "Submit solution"}
             </button>
             {lastAttempt?.state === "submitted" &&
-            lastAttempt.attempt.attemptSuccessful ? (
-                <div
-                    className={classnames(
-                        styles.attemptResponse,
-                        styles.attemptCorrect
-                    )}
-                >
-                    Your solution is correct
-                </div>
-            ) : (
-                <div
-                    className={classnames(
-                        styles.attemptResponse,
-                        styles.attemptIncorrect
-                    )}
-                >
-                    Your solution is incorrect
-                </div>
-            )}
+                (lastAttempt.attempt.attemptSuccessful ? (
+                    <div
+                        className={classnames(
+                            styles.attemptResponse,
+                            styles.attemptCorrect
+                        )}
+                    >
+                        Your solution is correct
+                    </div>
+                ) : (
+                    <div
+                        className={classnames(
+                            styles.attemptResponse,
+                            styles.attemptIncorrect
+                        )}
+                    >
+                        Your solution is incorrect
+                    </div>
+                ))}
             {lastAttempt?.state === "error" && (
                 <div
                     className={classnames(
