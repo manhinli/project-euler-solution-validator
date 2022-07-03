@@ -31,7 +31,9 @@ export const Header: React.FC<Props> = ({ subtitle, breadcrumbs }) => {
                     childrenWrapperClassName={styles.navChildren}
                 >
                     {breadcrumbs.map(({ href, label }) => (
-                        <Link href={href}>{label}</Link>
+                        <Link key={label} href={href}>
+                            {label}
+                        </Link>
                     ))}
                 </ContentContainer>
             )}
