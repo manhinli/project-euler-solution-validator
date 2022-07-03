@@ -10,7 +10,7 @@ const DEFAULT_SWR_CONFIG = {
 };
 
 function AireTCApp({ Component, pageProps }: AppProps) {
-    // TODO: Move this to central location
+    // User's name is held at the top of the app like a state store
     const [username, setUsername] = useState("");
 
     return (
