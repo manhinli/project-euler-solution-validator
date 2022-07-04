@@ -28,7 +28,7 @@ export default async function ApiProblemIdLeaderboard(
                 const problemId = parseProblemId(req.query.id);
 
                 // Check problem registered in database
-                const problems = getCollection<ProblemMetadata>("problems");
+                const problems = await getCollection<ProblemMetadata>("problems");
                 const requestedProblem = await problems.findOne({ problemId });
 
                 // If requested problem does not exist, return 404 Not Found
@@ -37,7 +37,7 @@ export default async function ApiProblemIdLeaderboard(
                 }
 
                 // Get problem leaderboard via query from database
-                const attempts = getCollection<Attempt>("attempts");
+                const attempts = await getCollection<Attempt>("attempts");
 
                 const query = attempts.aggregate([
                     // Get attempts against this problem

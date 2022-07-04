@@ -4,6 +4,7 @@ import { z } from "zod";
 import {
     respondClientError,
     respondMethodNotAllowed,
+    respondNotFound,
     respondSuccessWithJson,
 } from "../../../../lib/api";
 import { getCollection } from "../../../../lib/database";
@@ -16,9 +17,9 @@ const PostRequestBodySchema = z.object({
     userName: z
         .string()
         .min(3, { message: "User name must be at least 3 characters long" }),
-    solutionValue: z
+    attemptValue: z
         .string()
-        .min(1, { message: "Solution value must be a non-empty string" }),
+        .min(1, { message: "Attempt value must be a non-empty string" }),
 });
 
 const PROBLEMS_COMPILED_PATH = getEnv("PROBLEMS_COMPILED_PATH");
@@ -39,7 +40,7 @@ export default async function ApiProblemIdSolution(
         case "POST": {
             try {
                 const problemId = parseProblemId(req.query.id);
-                const { userName, solutionValue } = PostRequestBodySchema.parse(
+                const { userName, attemptValue } = PostRequestBodySchema.parse(
                     req.body
                 );
 
@@ -48,12 +49,14 @@ export default async function ApiProblemIdSolution(
                 const requestDateTime = new Date();
 
                 // Check problem registered in database
-                const problems = getCollection<ProblemMetadata>("problems");
+                const problems = await getCollection<ProblemMetadata>(
+                    "problems"
+                );
                 const requestedProblem = await problems.findOne({ problemId });
 
                 // If requested problem does not exist, return 404 Not Found
                 if (requestedProblem === null) {
-                    return res.status(404).send(null);
+                    return respondNotFound(res);
                 }
 
                 // Get problem validator
@@ -75,16 +78,16 @@ export default async function ApiProblemIdSolution(
                 //
                 // May need to consider async validation in separate
                 // thread/worker
-                const attemptValue = solutionValue.trim();
-                const validationResult = await validateSolution(attemptValue);
+                const value = attemptValue.trim();
+                const validationResult = await validateSolution(value);
 
                 // Record submission into database
-                const attempts = getCollection<Attempt>("attempts");
+                const attempts = await getCollection<Attempt>("attempts");
                 const { insertedId } = await attempts.insertOne({
                     problemId: requestedProblem.problemId,
                     userName,
                     dateTime: requestDateTime,
-                    attemptValue,
+                    attemptValue: value,
                     attemptSuccessful: validationResult,
                 });
 

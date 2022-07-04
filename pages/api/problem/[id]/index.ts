@@ -27,7 +27,7 @@ export default async function ApiProblemIdIndex(
                 const problemId = parseProblemId(req.query.id);
 
                 // Get problem information from database
-                const problems = getCollection<ProblemMetadata>("problems");
+                const problems = await getCollection<ProblemMetadata>("problems");
 
                 // Get all available problem information from database
                 const requestedProblem = await problems.findOne(

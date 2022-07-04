@@ -1,24 +1,31 @@
 import { Collection, MongoClient } from "mongodb";
 import { getEnv } from "./env";
 
-const DATABASE_URI = getEnv("DATABASE_URI");
-const DATABASE_NAME = getEnv("DATABASE_NAME");
-const COLLECTIONS = ["attempts", "problems"] as const;
+export const DATABASE_URI = getEnv("DATABASE_URI");
+export const DATABASE_NAME = getEnv("DATABASE_NAME");
+export const COLLECTIONS = ["attempts", "problems"] as const;
 
-export function getClient() {
+// Singleton MongoDB client instance
+let mongoClient: MongoClient | undefined = undefined;
+
+export async function getClient() {
+    if (mongoClient) {
+        return mongoClient;
+    }
+
     const client = new MongoClient(DATABASE_URI);
-    client.connect();
-    return client;
+    mongoClient = await client.connect();
+    return mongoClient;
 }
 
-export function getDatabase() {
-    const client = getClient();
+export async function getDatabase() {
+    const client = await getClient();
     return client.db(DATABASE_NAME);
 }
 
-export function getCollection<T>(
+export async function getCollection<T>(
     collection: typeof COLLECTIONS[number]
-): Collection<T> {
-    const db = getDatabase();
+): Promise<Collection<T>> {
+    const db = await getDatabase();
     return db.collection(collection);
 }

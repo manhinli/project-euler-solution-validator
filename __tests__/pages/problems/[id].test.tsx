@@ -1,9 +1,12 @@
+/**
+ * @jest-environment jest-environment-jsdom
+ */
+
 import {
     fireEvent,
     getAllByRole,
     render,
     screen,
-    waitFor,
 } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { swrConfigWrapper } from "../../../lib/test";

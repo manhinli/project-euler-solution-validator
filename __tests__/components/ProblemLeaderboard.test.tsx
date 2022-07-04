@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jest-environment-jsdom
+ */
+
 import { getAllByRole, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import ProblemLeaderboard from "../../components/ProblemLeaderboard";

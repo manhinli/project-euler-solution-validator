@@ -10,3 +10,6 @@ export const swrConfigWrapper = (
         {children}
     </SWRConfig>
 );
+
+// Utility to deep clone objects
+export const deepClone = (o: object) => JSON.parse(JSON.stringify(o));

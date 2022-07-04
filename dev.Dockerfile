@@ -1,6 +1,8 @@
 # Development environment Docker image
 
-FROM node:16-alpine
+# Force x86-64 image for image as test tooling uses binaries which are otherwise
+# not available for aarch64
+FROM --platform=linux/amd64 node:16
 
 WORKDIR /app
 

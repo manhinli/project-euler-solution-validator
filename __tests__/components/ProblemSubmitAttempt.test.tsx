@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jest-environment-jsdom
+ */
+
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import ProblemSubmitAttempt from "../../components/ProblemSubmitAttempt";
@@ -115,7 +119,7 @@ describe("ProblemSubmitAttempt", () => {
             "/api/problem/42/solution"
         );
         expect(globalThis.fetch.mock.calls[0][1]).toEqual({
-            body: `{"userName":"Test user","solutionValue":"123456789"}`,
+            body: `{"userName":"Test user","attemptValue":"123456789"}`,
             headers: {
                 "Content-Type": "application/json",
             },

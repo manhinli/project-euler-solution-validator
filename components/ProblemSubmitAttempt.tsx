@@ -57,10 +57,10 @@ export const ProblemSubmitAttempt: React.FC<Props> = ({
                     "solution-input"
                 ) as HTMLInputElement;
 
-                const solutionValue = solutionInput.value;
+                const attemptValue = solutionInput.value;
                 const requestBody = {
                     userName: username,
-                    solutionValue,
+                    attemptValue,
                 };
 
                 // Send solution off to server

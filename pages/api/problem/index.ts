@@ -20,7 +20,7 @@ export default async function ApiProblemIndex(
     switch (req.method) {
         // Return all problems
         case "GET": {
-            const problems = getCollection<ProblemMetadata>("problems");
+            const problems = await getCollection<ProblemMetadata>("problems");
 
             // Get all available problem information from database
             const allProblems = await problems
