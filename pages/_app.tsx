@@ -16,7 +16,7 @@ const DEFAULT_SWR_CONFIG = {
         }),
 };
 
-function AireTCApp({ Component, pageProps }: AppProps) {
+function ProjEulerApp({ Component, pageProps }: AppProps) {
     // User's name is held at the top of the app like a state store
     const [username, setUsername] = useState("");
 
@@ -33,4 +33,4 @@ function AireTCApp({ Component, pageProps }: AppProps) {
     );
 }
 
-export default AireTCApp;
+export default ProjEulerApp;

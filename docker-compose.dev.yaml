@@ -1,7 +1,7 @@
 version: "3"
 
 services:
-    airetc:
+    proj_euler:
         build:
             context: .
             dockerfile: dev.Dockerfile
@@ -25,7 +25,7 @@ services:
         ports:
             - 3000:3000
         networks:
-            - airetc_network
+            - proj_euler_network
     
     database:
         image: mongo:5.0
@@ -34,7 +34,7 @@ services:
         ports:
             - 27017:27017
         networks:
-            - airetc_network
+            - proj_euler_network
 
 networks:
-    airetc_network:
+    proj_euler_network:
