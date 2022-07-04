@@ -23,6 +23,21 @@ const PROBLEMS_COMPILED_PATH = process.env.PROBLEMS_COMPILED_PATH;
         await db.createCollection(collection);
     }
 
+    // Apply indexes to database
+
+    // problems - Unique problem ID
+    db.collection("problems").createIndex("problemId", {
+        name: "problems-unique-problemId",
+        unique: true,
+    });
+    // attempts - Index on date/time, userName
+    db.collection("attempts").createIndex("dateTime", {
+        name: "attempts-index-dateTime",
+    });
+    db.collection("attempts").createIndex("userName", {
+        name: "attempts-index-userName",
+    });
+
     // Index compiled problems located in /dist/problems
     const problemsGlob = readdirGlob(PROBLEMS_COMPILED_PATH, {
         pattern: "*.js",
@@ -61,7 +76,7 @@ const PROBLEMS_COMPILED_PATH = process.env.PROBLEMS_COMPILED_PATH;
             return;
         }
 
-        console.log("Indexing complete");
+        console.log(`${indexCount} problem definitions indexed`);
         process.exit(0);
     });
-})();
+})().catch((e) => console.error(e));
